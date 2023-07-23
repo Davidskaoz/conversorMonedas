@@ -7,6 +7,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main extends JFrame {
 
@@ -14,8 +16,9 @@ public class Main extends JFrame {
     private Object [] selectConverts  = {"Conversor de Moneda","Conversor de Temperatura"};
     private JButton buttonContinue = new JButton("Continuar");
     private JButton buttonClose = new JButton("Cancelar");
-
     private JComboBox comboBox =  new JComboBox(selectConverts);
+
+    private  JPanel newPanel;
 
     private int optionSelected = 0;
 
@@ -24,7 +27,7 @@ public class Main extends JFrame {
         super("JPanel Main");
 
         // create a new panel with GridBagLayout manager
-        JPanel newPanel = new JPanel(new GridBagLayout());
+        newPanel = new JPanel(new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -59,7 +62,6 @@ public class Main extends JFrame {
 
         // add the panel to this frame
         add(newPanel);
-
         pack();
         setLocationRelativeTo(null);
 
@@ -76,11 +78,9 @@ public class Main extends JFrame {
         buttonContinue.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                closeFrame(newPanel);
                 if(optionSelected == 0){
-
                     new Divisa().setVisible(true);
-
                 }else{
                     new Temperatura().setVisible(true);
                 }
@@ -90,12 +90,22 @@ public class Main extends JFrame {
         buttonClose.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
-                System.exit(0);
+                closeFrame(newPanel);
             }
         });
+    }
 
+    public void closeFrame(JPanel jpanel){
+        JFrame mainFrame = (JFrame) SwingUtilities.getWindowAncestor(jpanel);
+        mainFrame.dispose();;
+    }
 
+    public Boolean validacion(JTextField textField) {
+
+        String text = textField.getText();
+        Pattern pattern = Pattern.compile("^\\+?(\\d*[1-9]+\\d*\\.?\\d*|\\d*\\.\\d*[1-9]+\\d*)$");
+        Matcher matcher = pattern.matcher(text);
+        return matcher.matches();
     }
 
 

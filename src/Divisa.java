@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URISyntaxException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Divisa extends JFrame {
 
@@ -87,7 +90,19 @@ public class Divisa extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                System.out.println("Divisa selecciona" + optionSelected);
+                Main main =  new Main();
+
+                if(main.validacion(textField)){
+                    try{
+                        new HttpClientApp().invoke();
+                    } catch (URISyntaxException ex){
+                        ex.printStackTrace();
+                    }
+
+                }else{
+                    JOptionPane.showMessageDialog(newPanel, "Introduce un valor numerico");
+                }
+
             }
         });
 
@@ -101,4 +116,5 @@ public class Divisa extends JFrame {
 
 
     }
+
 }
