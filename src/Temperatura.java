@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URISyntaxException;
 
 public class Temperatura extends JFrame {
 
@@ -13,7 +14,8 @@ public class Temperatura extends JFrame {
     private JTextField textField = new JTextField();
 
     private JLabel labelType = new JLabel("Elije los tipos de grados a convertir");
-    private Object [] selectConverts  = {"Centigrados","Farengeit"};
+    private Object [] selectConverts  = {"Celcius a Fahrenheit","Fahrenheit a Celcius","Celcius a Kelvin" ,"Fahrenheit a Kelvin",
+                                         "Kelvin a Celcius","Kelvin a Fahrenheit"};
 
     private JButton buttonContinue = new JButton("Continuar");
 
@@ -81,14 +83,21 @@ public class Temperatura extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // Aquí hacemos lo que queramos hacer.
                 optionSelected = comboBox.getSelectedIndex();
-                System.out.println(optionSelected);
             }
         });
         buttonContinue.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                System.out.println("Temperatura seleccionada" + optionSelected);
+                Main main =  new Main();
+
+                if(main.validacion(textField)){
+                    int i = Integer.parseInt(textField.getText());
+                    JOptionPane.showMessageDialog(newPanel, conversor(i));
+
+                }else{
+                    JOptionPane.showMessageDialog(newPanel, "Introduce un valor numerico");
+                }
             }
         });
 
@@ -101,5 +110,36 @@ public class Temperatura extends JFrame {
         });
 
 
+    }
+
+
+    private double conversor(int valor){
+
+        double resultado = 0;
+        switch(optionSelected) {
+            case 0:
+                resultado  = valor * 1.8 + 32;
+                break;
+            case 1:
+                resultado  = (valor-32) / 1.8;
+                break;
+            case 2:
+                resultado  =  valor + 273.15;
+                break;
+            case 3:
+                resultado  =  0.55 * (valor - 32)  + 273.15;
+                break;
+            case 4:
+                resultado  =  valor - 273.15;
+                break;
+            case 5:
+                resultado  =  1.8 * (valor - 273.15) + 32;
+                break;
+            default:
+                System.out.println("i es mayor a tres.");
+        }
+
+
+        return resultado;
     }
 }

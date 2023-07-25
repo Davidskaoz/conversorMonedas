@@ -1,12 +1,12 @@
 package src;
 
+import netscape.javascript.JSObject;
+import org.json.JSONObject;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URISyntaxException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Divisa extends JFrame {
 
@@ -14,16 +14,21 @@ public class Divisa extends JFrame {
 
     private JTextField textField = new JTextField();
 
-    private JLabel labelType = new JLabel("Introduce la divisa a convertir");
-    private Object [] selectConverts  = {"Dolares","Euros","Yen"};
+    private JLabel labelType = new JLabel("a");
+
+    private Object [] selectConverts  = {"MXN","USD","EUR","JPY"};
 
     private JButton buttonContinue = new JButton("Continuar");
 
     private JButton buttonClose = new JButton("Cancelar");
 
-    private JComboBox comboBox =  new JComboBox(selectConverts);
+    private JComboBox comboBoxInit =  new JComboBox(selectConverts);
 
-    private int optionSelected = 0;
+    private JComboBox comboBoxFinal =  new JComboBox(selectConverts);
+
+    private String optionSelectedInit = "MXN" ;
+
+    private String optionSelectedFinal = "USD";
 
     public Divisa() {
         super("JPanel Divisa");
@@ -50,19 +55,24 @@ public class Divisa extends JFrame {
 
         constraints.gridx = 0;
         constraints.gridy = 2;
-        newPanel.add(labelType, constraints);
+        newPanel.add(comboBoxInit, constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 3;
-        newPanel.add(comboBox, constraints);
+        newPanel.add(labelType, constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 4;
+        comboBoxFinal.setSelectedIndex(1);
+        newPanel.add(comboBoxFinal, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 5;
         constraints.gridwidth = 1;
         newPanel.add(buttonContinue, constraints);
 
         constraints.gridx = 1;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         newPanel.add(buttonClose, constraints);
 
 
@@ -78,13 +88,23 @@ public class Divisa extends JFrame {
 
         //add action listeners buttons and comboBox
 
-        comboBox.addActionListener(new ActionListener(){
+        comboBoxInit.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Aquí hacemos lo que queramos hacer.
-                optionSelected = comboBox.getSelectedIndex();
-                System.out.println(optionSelected);
+                optionSelectedInit = String.valueOf(comboBoxInit.getSelectedItem());
+                System.out.println(optionSelectedInit);
             }
+        });
+
+        comboBoxFinal.addActionListener(new ActionListener(){
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                optionSelectedFinal = String.valueOf(comboBoxFinal.getSelectedItem());
+                System.out.println(optionSelectedFinal);
+            }
+
         });
         buttonContinue.addActionListener( new ActionListener() {
             @Override
@@ -94,8 +114,24 @@ public class Divisa extends JFrame {
 
                 if(main.validacion(textField)){
                     try{
-                        new HttpClientApp().invoke();
-                    } catch (URISyntaxException ex){
+                        String url = "https://api.currencyapi.com/v3/" +
+                                     "latest?apikey=cur_live_rO3DwvWoqfYc5oCeuGWh9gTTnMYE0EEcNrOdkOsQ&"+
+                                     "currencies="+ optionSelectedFinal + "&base_currency="+ optionSelectedInit;
+
+                        JSONObject jsonResponse = new JSONObject (new HttpClientApp().invoke(url)).getJSONObject("data");
+
+
+                        Double baseValue = Double.valueOf(jsonResponse.getJSONObject(optionSelectedFinal).get("value").toString());
+
+                        Double valueToConvertion = Double.valueOf(textField.getText());
+
+                        Double convertionFinal   = baseValue * valueToConvertion;
+
+                        System.out.println(convertionFinal);
+
+                        JOptionPane.showMessageDialog(newPanel, "Tienes " + convertionFinal + " " +  optionSelectedFinal);
+
+                    } catch (Exception ex){
                         ex.printStackTrace();
                     }
 
@@ -116,5 +152,6 @@ public class Divisa extends JFrame {
 
 
     }
+
 
 }

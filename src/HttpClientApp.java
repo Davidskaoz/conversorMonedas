@@ -1,34 +1,32 @@
 package src;
 
-import com.sun.net.httpserver.Request;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 public class HttpClientApp {
 
-    public void invoke() throws URISyntaxException {
+    public String invoke(String Url) throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
 
         HttpClient client =  HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(2))
                 .build();
 
         HttpRequest request =  HttpRequest.newBuilder()
-                .uri(new URI("https://api.currencyapi.com/v3/" +
-                        "latest?apikey=cur_live_rO3DwvWoqfYc5oCeuGWh9gTTnMYE0EEcNrOdkOsQ&" +
-                        "currencies=EUR%2CUSD%2CCAD&base_currency=MXN"))
+                .uri(new URI(Url))
                 .GET()
                 .build();
 
-        client.sendAsync(request, BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(System.out::println)
-                .join();
+        CompletableFuture<HttpResponse<String>> response =  client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+
+        return  response.thenApply(HttpResponse::body).get(2, TimeUnit.SECONDS);
     }
 }
