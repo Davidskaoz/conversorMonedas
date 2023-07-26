@@ -113,27 +113,34 @@ public class Temperatura extends JFrame {
     }
 
 
-    private double conversor(int valor){
+    private String conversor(int valor){
 
-        double resultado = 0;
+        double convertion = 0;
+        String resultado ="";
         switch(optionSelected) {
             case 0:
-                resultado  = valor * 1.8 + 32;
+                convertion  = valor * 1.8 + 32;
+                resultado   = convertion + " °F";
                 break;
             case 1:
-                resultado  = (valor-32) / 1.8;
+                convertion  = (valor-32) / 1.8;
+                resultado   = convertion + " °C";
                 break;
             case 2:
-                resultado  =  valor + 273.15;
+                convertion  =  valor + 273.15;
+                resultado   = convertion + " °K";
                 break;
             case 3:
-                resultado  =  0.55 * (valor - 32)  + 273.15;
+                convertion  =  0.55 * (valor - 32)  + 273.15;
+                resultado   = convertion + " °K";
                 break;
             case 4:
-                resultado  =  valor - 273.15;
+                convertion  =  valor - 273.15;
+                resultado   = convertion + " °C";
                 break;
             case 5:
-                resultado  =  1.8 * (valor - 273.15) + 32;
+                convertion  =  1.8 * (valor - 273.15) + 32;
+                resultado   = convertion + " °F";
                 break;
             default:
                 System.out.println("i es mayor a tres.");
